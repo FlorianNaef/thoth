@@ -1,6 +1,6 @@
-import './style.css';
+import "./style.css";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 <header class="header">
   <button type="button" id="contentToggleButton" class="header-button content-toggle">
     <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" x="0px" y="0px" width="24" height="24" viewBox="0 0 48 48">
@@ -20,37 +20,38 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 let isDarkmodeEnabled = false;
 
-const contentContainer = document.getElementById('contentContainer');
-const feedContainer = document.getElementById('feedContainer');
-const contentToggleButton = document.getElementById('contentToggleButton');
-const themeToggle = document.getElementById('themeToggleButton');
-const visibilityToggle = document.getElementById('visibilityToggleButton');
+const contentContainer = document.getElementById("contentContainer");
+const feedContainer = document.getElementById("feedContainer");
+const contentToggleButton = document.getElementById("contentToggleButton");
+const themeToggle = document.getElementById("themeToggleButton");
+const visibilityToggle = document.getElementById("visibilityToggleButton");
 
-contentToggleButton?.addEventListener('click', () => hideStory());
-themeToggle?.addEventListener('click', () => toggleTheme());
-visibilityToggle?.addEventListener('click', () => {
+contentToggleButton?.addEventListener("click", () => hideStory());
+themeToggle?.addEventListener("click", () => toggleTheme());
+visibilityToggle?.addEventListener("click", () => {
   if (!contentContainer || !feedContainer) {
     return;
   }
-  contentContainer.classList.toggle('hidden');
-  feedContainer.classList.toggle('hidden');
+  contentContainer.classList.toggle("hidden");
+  feedContainer.classList.toggle("hidden");
 });
 
 toggleTheme();
 fetchFeed();
 
 function fetchFeed() {
-  const feedUrl = 'https://rss.dw.com/xml/rss-de-all';
+  const feedUrl = "https://rss.dw.com/xml/rss-de-all";
+  const corsProxyUrl = "https://corsproxy.io/?url=";
 
-  fetch(`https://thingproxy.freeboard.io/fetch/${feedUrl}`)
+  fetch(`${corsProxyUrl}${feedUrl}`)
     .then((response) => response.text())
     .then((data) => {
       const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(data, 'application/xml');
+      const xmlDoc = parser.parseFromString(data, "application/xml");
       displayFeed(xmlDoc);
     })
     .catch((error) => {
-      console.error('Error fetching the feed:', error);
+      console.error("Error fetching the feed:", error);
     });
 }
 
@@ -59,20 +60,20 @@ function displayFeed(xmlDoc: Document) {
     return;
   }
 
-  feedContainer.innerHTML = '';
+  feedContainer.innerHTML = "";
 
-  const items = xmlDoc.querySelectorAll('item, entry');
+  const items = xmlDoc.querySelectorAll("item, entry");
 
   items.forEach((item) => {
-    const title = item.querySelector('title')?.textContent || 'No title';
-    const link = item.querySelector('link')?.textContent || '#';
+    const title = item.querySelector("title")?.textContent || "No title";
+    const link = item.querySelector("link")?.textContent || "#";
     const description =
-      item.querySelector('description, summary')?.textContent ||
-      'No description available';
+      item.querySelector("description, summary")?.textContent ||
+      "No description available";
 
-    const feedItem = document.createElement('div');
-    feedItem.classList.add('feed-item');
-    feedItem.addEventListener('click', () => showStory(link));
+    const feedItem = document.createElement("div");
+    feedItem.classList.add("feed-item");
+    feedItem.addEventListener("click", () => showStory(link));
 
     feedItem.innerHTML = `
             <h3>${title}</h3>
@@ -80,7 +81,7 @@ function displayFeed(xmlDoc: Document) {
         `;
 
     if (isDarkmodeEnabled) {
-      feedItem.classList.add('dark-mode');
+      feedItem.classList.add("dark-mode");
     }
 
     feedContainer.appendChild(feedItem);
@@ -91,8 +92,8 @@ function showStory(link: string) {
   if (!contentContainer || !contentToggleButton) {
     return;
   }
-  contentToggleButton.style.display = 'block';
-  contentContainer.style.display = 'block';
+  contentToggleButton.style.display = "block";
+  contentContainer.style.display = "block";
   contentContainer.innerHTML = `
   <iframe class="content-frame" src="${link}"></iframe>
   `;
@@ -102,20 +103,20 @@ function hideStory() {
   if (!contentContainer || !contentToggleButton) {
     return;
   }
-  contentToggleButton.style.display = 'none';
-  contentContainer.style.display = 'none';
+  contentToggleButton.style.display = "none";
+  contentContainer.style.display = "none";
   contentContainer.innerHTML = ``;
 }
 
 function toggleTheme() {
   isDarkmodeEnabled = !isDarkmodeEnabled;
-  document.body.classList.toggle('dark-mode', isDarkmodeEnabled);
-  const button = document.querySelector('button') as HTMLInputElement;
-  const feedItems = document.querySelectorAll('.feed-item');
+  document.body.classList.toggle("dark-mode", isDarkmodeEnabled);
+  const button = document.querySelector("button") as HTMLInputElement;
+  const feedItems = document.querySelectorAll(".feed-item");
 
-  button.classList.toggle('dark-mode', isDarkmodeEnabled);
+  button.classList.toggle("dark-mode", isDarkmodeEnabled);
 
   feedItems.forEach((item) => {
-    item.classList.toggle('dark-mode', isDarkmodeEnabled);
+    item.classList.toggle("dark-mode", isDarkmodeEnabled);
   });
 }
